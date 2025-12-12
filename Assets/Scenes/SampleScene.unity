@@ -881,7 +881,7 @@ GameObject:
   - component: {fileID: 1495326209}
   - component: {fileID: 1495326212}
   - component: {fileID: 1495326214}
-  - component: {fileID: 1495326215}
+  - component: {fileID: 1495326213}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -980,11 +980,24 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d86d2c8a146e74067951fb7289b99598, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementController
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMovementController
   moveSpeed: 5
   jumpForce: 7.5
-  canDoubleJump: 1
-  jumpsLimiter: 2
+  isJumping: 0
+  currentState: 0
+--- !u!114 &1495326213
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495326208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d7d0341f97af10d3baa966b2bb280c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerAnimationController
+  facingDirection: 1
 --- !u!114 &1495326214
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -994,26 +1007,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1495326208}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 68690b2688c94e4593e5734e426b6733, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerAnimationController
---- !u!114 &1495326215
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495326208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcf4add22f44fc2b54fd034c3030d46, type: 3}
+  m_Script: {fileID: 11500000, guid: 9fe531aa4b3ae26c9b23e3776228e982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerCollisionController
-  groundCheckDistance: 0.9
-  wallCheckDistance: 1
   groundLayer:
     serializedVersion: 2
     m_Bits: 128
+  groundCheckDistance: 0.9
+  isGrounded: 0
+  wallCheckDistance: 0.85
+  isWallDetected: 0
 --- !u!1 &1981273371
 GameObject:
   m_ObjectHideFlags: 0

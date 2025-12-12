@@ -1,78 +1,50 @@
-using System;
 using UnityEngine;
 
 namespace Player
 {
     public class PlayerAnimationController : MonoBehaviour
     {
-        public int FacingDirection
-        {
-            get => _facingDirection;
-        }
-
-        private static readonly int AnimMoveParam = Animator.StringToHash("xVelocity");
-        private static readonly int AnimJumpParam = Animator.StringToHash("yVelocity");
-        private static readonly int AnimIsJumping = Animator.StringToHash("isJumping");
-        private static readonly int AnimIsDoubleJumping = Animator.StringToHash("doubleJump");
-        private static readonly int AnimIsWallSliding = Animator.StringToHash("IsWallDetected");
-
+        public float FacingDirection => facingDirection;
+        
+        private static readonly int MoveAnimParam = Animator.StringToHash("xVelocity");
+        private static readonly int JumpAnimParam = Animator.StringToHash("yVelocity");
+        private static readonly int JumpingAnimParam = Animator.StringToHash("isJumping");
+        private static readonly int DoubleJumpAnimParam = Animator.StringToHash("doubleJump");
+        
+        [Header("Sprite Direction")]
+        [SerializeField] private float facingDirection = 1;
+        
         private Animator _animator;
         private PlayerMovementController _playerMovement;
         private PlayerCollisionController _playerCollision;
-        private int _facingDirection = 1;
-
-        private void Start()
+        
+        private void Awake()
         {
             _animator = GetComponentInChildren<Animator>();
-            if (_animator == null) throw new Exception("PlayerAnimationController requires an Animator component");
-
             _playerMovement = GetComponent<PlayerMovementController>();
             _playerCollision = GetComponent<PlayerCollisionController>();
         }
 
         private void Update()
         {
-            UpdateAnimEvents();
+            HandlePlayerSpriteDirection((int)_playerMovement.InputMovement.x);
+            HandlePlayerAnimEvents();
         }
 
-        private void FixedUpdate()
+        private void HandlePlayerAnimEvents()
         {
-            FlipSprite((int)_playerMovement.MoveInput.x);
-            ChangeDirection((int)_playerMovement.MoveInput.x);
+            _animator.SetFloat(MoveAnimParam, _playerMovement.InputMovement.x);
+            _animator.SetFloat(JumpAnimParam, _playerMovement.GetLinearVelocity().y);
+            
+            _animator.SetBool(JumpingAnimParam, !_playerCollision.IsGrounded);
+            if (_playerMovement.IsDoubleJumping) _animator.SetTrigger(DoubleJumpAnimParam);
         }
 
-        private void UpdateAnimEvents()
-        {
-            _animator.SetFloat(AnimMoveParam, _playerMovement.MoveInput.x);
-            _animator.SetFloat(AnimJumpParam, _playerMovement.GetLinearVelocity().y);
-
-            _animator.SetBool(AnimIsJumping, _playerMovement.IsJumping());
-            _animator.SetBool(AnimIsWallSliding, _playerCollision.IsWallDetected);
-            if (_playerMovement.IsDoubleJumping) _animator.SetTrigger(AnimIsDoubleJumping);
-        }
-
-        public void ChangeDirection()
-        {
-            if (_facingDirection == 1) _facingDirection = -1;
-            else if (_facingDirection == -1) _facingDirection = 1;
-        }
-
-        public void ChangeDirection(int x)
+        private void HandlePlayerSpriteDirection(int x)
         {
             if (x == 0) return;
-            _facingDirection = x;   
-        }
-
-        public void FlipSprite()
-        {
-            if (transform.localScale.x == 1) transform.localScale = new Vector3(-1, 1f, 1f);
-            else if (transform.localScale.x == -1) transform.localScale = new Vector3(1, 1f, 1f);
-        }
-
-        public void FlipSprite(int x)
-        {
-            if (x == 0) return;
-            transform.localScale = new Vector3(x, 1f, 1f);
+            facingDirection = x;
+            transform.localScale = new Vector3(facingDirection, 1, 1);
         }
     }
 }

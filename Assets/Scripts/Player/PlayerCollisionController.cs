@@ -1,77 +1,73 @@
-using System;
 using UnityEngine;
 
 namespace Player
 {
     public class PlayerCollisionController : MonoBehaviour
     {
-        public bool IsGrounded { get; private set; }
-        public bool IsWallDetected { get; private set; }
-        
-        [Header("Ground Detection")] 
-        [SerializeField] private float groundCheckDistance = 0.9f;
-        [SerializeField] private float wallCheckDistance = 1f;
-        [SerializeField] private LayerMask groundLayer;
-        
+        public bool IsGrounded => isGrounded;
+        public bool IsWallDetected => isWallDetected;
 
-        private readonly RaycastHit2D[] _hits = new RaycastHit2D[1];
-        private PlayerAnimationController _playerAnimationController;
-        private int _facingDirection = 1;
-        
+        public int WallDirection { get; private set; }
+
+        [Header("Ground")]
+        [SerializeField] private LayerMask groundLayer;
+        [SerializeField] private float groundCheckDistance = 0.4f;
+        [SerializeField] public bool isGrounded;
+
+        [Header("Wall")]
+        [SerializeField] private float wallCheckDistance = 0.4f;
+        [SerializeField] public bool isWallDetected;
+
+        private PlayerAnimationController _playerAnim;
+
         private void Awake()
         {
-            _playerAnimationController = GetComponent<PlayerAnimationController>();
+            _playerAnim = GetComponent<PlayerAnimationController>();
         }
 
-        private void Update()
+        private void FixedUpdate()
         {
-            _facingDirection = _playerAnimationController.FacingDirection;
-            
-            HandleGroundCollision();
-            HandleWallCollision();
+            WallDirection = (int)_playerAnim.FacingDirection;
+
+            HandleGroundCheck();
+            HandleWallCheck();
         }
 
-        private void HandleGroundCollision()
+        private void HandleGroundCheck()
         {
-            int count = Physics2D.RaycastNonAlloc(
+            isGrounded = Physics2D.Raycast(
                 transform.position,
                 Vector2.down,
-                _hits,
                 groundCheckDistance,
                 groundLayer
             );
-
-            IsGrounded = count > 0;
         }
-        
-        private void HandleWallCollision()
+
+        private void HandleWallCheck()
         {
-            IsWallDetected = Physics2D.Raycast(
+            isWallDetected = Physics2D.Raycast(
                 transform.position,
-                Vector2.right * _playerAnimationController.FacingDirection,
+                Vector2.right * WallDirection,
                 wallCheckDistance,
-                groundLayer);
+                groundLayer
+            );
         }
 
         private void OnDrawGizmos()
         {
-            float sphereRadious = 0.04f;
-            
-            Gizmos.color = IsGrounded ? Color.green: Color.red;
-            Gizmos.DrawLine(
-                transform.position,
+            float r = 0.04f;
+
+            // Ground
+            Gizmos.color = isGrounded ? Color.green : Color.red;
+            Gizmos.DrawLine(transform.position,
                 transform.position + Vector3.down * groundCheckDistance);
-            Gizmos.DrawWireSphere(
-                transform.position + Vector3.down * groundCheckDistance, 
-                sphereRadious);
-            
-            Gizmos.color = IsWallDetected ? Color.green: Color.red;
-            Gizmos.DrawLine(
-                transform.position,
-                transform.position + Vector3.right * _facingDirection * wallCheckDistance);
-            Gizmos.DrawWireSphere(
-                transform.position + Vector3.right * _facingDirection * wallCheckDistance, 
-                sphereRadious);
+            Gizmos.DrawWireSphere(transform.position + Vector3.down * groundCheckDistance, r);
+
+            // Wall
+            Gizmos.color = isWallDetected ? Color.green : Color.red;
+            Gizmos.DrawLine(transform.position,
+                transform.position + Vector3.right * WallDirection * wallCheckDistance);
+            Gizmos.DrawWireSphere(transform.position + Vector3.right * WallDirection * wallCheckDistance, r);
         }
     }
 }
