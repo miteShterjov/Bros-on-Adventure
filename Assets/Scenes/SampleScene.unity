@@ -882,6 +882,7 @@ GameObject:
   - component: {fileID: 1495326212}
   - component: {fileID: 1495326214}
   - component: {fileID: 1495326213}
+  - component: {fileID: 1495326215}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -962,7 +963,7 @@ Transform:
   m_GameObject: {fileID: 1495326208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.82, y: -0.74, z: 0}
+  m_LocalPosition: {x: -4.48, y: 0.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -983,7 +984,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Player.PlayerMovementController
   moveSpeed: 5
   jumpForce: 7.5
-  isJumping: 0
+  jumpCap: 2
+  jumpCounter: 0
+  isDoubleJumping: 0
+  airMoveSpeedMultiplier: 1
+  wallJumpHorizontalSpeed: 5
+  wallJumpLockDuration: 0.12
   currentState: 0
 --- !u!114 &1495326213
 MonoBehaviour:
@@ -1017,6 +1023,22 @@ MonoBehaviour:
   isGrounded: 0
   wallCheckDistance: 0.85
   isWallDetected: 0
+--- !u!114 &1495326215
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1495326208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 456accc091c0f0575a8bb10f0aef3259, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KnockbackVFX
+  knockbackDuration: 1
+  knockbackPower: {x: 1, y: 2}
+  isKnocked: 0
+  canBeKnocked: 1
 --- !u!1 &1981273371
 GameObject:
   m_ObjectHideFlags: 0
@@ -1287,7 +1309,7 @@ Transform:
   m_GameObject: {fileID: 2102472952}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.42, y: -1.8639998, z: 0}
+  m_LocalPosition: {x: -4.08, y: -0.8939998, z: 0}
   m_LocalScale: {x: 5.041555, y: -0.6709109, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

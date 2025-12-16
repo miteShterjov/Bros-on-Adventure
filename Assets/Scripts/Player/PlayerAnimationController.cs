@@ -4,15 +4,19 @@ namespace Player
 {
     public class PlayerAnimationController : MonoBehaviour
     {
-        public float FacingDirection => facingDirection;
+        public int FacingDirection => facingDirection;
         
         private static readonly int MoveAnimParam = Animator.StringToHash("xVelocity");
         private static readonly int JumpAnimParam = Animator.StringToHash("yVelocity");
         private static readonly int JumpingAnimParam = Animator.StringToHash("isJumping");
         private static readonly int DoubleJumpAnimParam = Animator.StringToHash("doubleJump");
+        private static readonly int WallSlideAnimParam = Animator.StringToHash("isWallSliding");
+        private static readonly int PlayerHurtAnimParam = Animator.StringToHash("isHurt");
+        
+        public bool IsKnocked { get; set; }
         
         [Header("Sprite Direction")]
-        [SerializeField] private float facingDirection = 1;
+        [SerializeField] private int facingDirection = 1;
         
         private Animator _animator;
         private PlayerMovementController _playerMovement;
@@ -37,7 +41,13 @@ namespace Player
             _animator.SetFloat(JumpAnimParam, _playerMovement.GetLinearVelocity().y);
             
             _animator.SetBool(JumpingAnimParam, !_playerCollision.IsGrounded);
-            if (_playerMovement.IsDoubleJumping) _animator.SetTrigger(DoubleJumpAnimParam);
+
+            // CHANGED: trigger only once, exactly when the 2nd jump occurs.
+            if (_playerMovement.ConsumeDoubleJump())
+                _animator.SetTrigger(DoubleJumpAnimParam);
+            
+            _animator.SetBool(WallSlideAnimParam, _playerMovement.CurrentState == PlayerMovementController.State.WallSliding);
+            _animator.SetBool(PlayerHurtAnimParam, _playerMovement.PlayerIsKnocked);
         }
 
         private void HandlePlayerSpriteDirection(int x)
