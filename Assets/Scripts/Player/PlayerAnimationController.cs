@@ -12,6 +12,8 @@ namespace Player
         private static readonly int DoubleJumpAnimParam = Animator.StringToHash("doubleJump");
         private static readonly int WallSlideAnimParam = Animator.StringToHash("isWallSliding");
         private static readonly int PlayerHurtAnimParam = Animator.StringToHash("isHurt");
+        private static readonly int RevivedAnimParam = Animator.StringToHash("revived");
+        private static readonly int DeadAnimParam = Animator.StringToHash("destroyed");
         
         public bool IsKnocked { get; set; }
         
@@ -34,6 +36,9 @@ namespace Player
             HandlePlayerSpriteDirection((int)_playerMovement.InputMovement.x);
             HandlePlayerAnimEvents();
         }
+        
+        public void RevivePlayerAnimEvent() => _animator.SetTrigger(RevivedAnimParam);
+        public void DestroyPlayerAnimEvent() => _animator.SetTrigger(DeadAnimParam);
 
         private void HandlePlayerAnimEvents()
         {

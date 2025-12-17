@@ -1,3 +1,4 @@
+using GameEffects;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
@@ -195,11 +196,9 @@ namespace Player
 
                 // Allow wall jump even if we previously used up jumps in the air.
                 // This is classic behavior: touching a wall "refreshes" your jump options.
-                if (jumpCounter != 0)
-                    jumpCounter = 0;
+                if (jumpCounter != 0) jumpCounter = 0;
 
-                if (isDoubleJumping)
-                    isDoubleJumping = false;
+                if (isDoubleJumping) isDoubleJumping = false;
 
                 if ((int)_moveInput.x != 0 && (int)_moveInput.x != _playerAnim.FacingDirection)
                     currentState = State.Idle;
