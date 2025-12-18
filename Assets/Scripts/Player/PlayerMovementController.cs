@@ -61,6 +61,7 @@ namespace Player
 
         private void Awake()
         {
+            currentState = State.Idle;
             _rb = GetComponent<Rigidbody2D>();
             _inputActions = new InputSystem_Actions();
             _playerCollision = GetComponent<PlayerCollisionController>();
@@ -70,12 +71,22 @@ namespace Player
             _inputActions.Player.Move.performed += OnMove;
             _inputActions.Player.Move.canceled += OnMoveCanceled;
             _inputActions.Player.Jump.performed += OnJump;
-            _inputActions.Player.Test.performed += ctx => _knockback.Knockback();
+            _inputActions.Player.Test.performed += ctx => TestingDebugingPlayerDies();
         }
 
         private void Update()
         {
             if (PlayerIsKnocked) return;
+            
+            if (GameManager.Instance.IsRespawning)
+            {
+                _inputActions.Player.Disable();
+                _moveInput = Vector2.zero;
+                SetLinearVelocity(0, _rb.linearVelocity.y);
+                return;
+            } 
+            else if (!GameManager.Instance.IsRespawning) _inputActions.Player.Enable();
+            
 
             if (jumpBufferTimer > 0f)
                 jumpBufferTimer -= Time.deltaTime;
@@ -325,5 +336,10 @@ namespace Player
         // private void SetLinearVelocity(Vector2 velocity) => _rb.linearVelocity = velocity;
 
         public Vector2 GetLinearVelocity() => _rb.linearVelocity;
+
+        private void TestingDebugingPlayerDies()
+        {
+            _playerAnim.DestroyPlayerAnimEvent();
+        }
     }
 }

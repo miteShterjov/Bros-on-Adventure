@@ -33,6 +33,7 @@ namespace Player
 
         private void Update()
         {
+            if (!_animator) return;
             HandlePlayerSpriteDirection((int)_playerMovement.InputMovement.x);
             HandlePlayerAnimEvents();
         }
