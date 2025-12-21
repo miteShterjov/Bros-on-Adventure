@@ -1,4 +1,3 @@
-using System;
 using Player;
 using System.Collections;
 using UnityEngine;
@@ -13,9 +12,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private float playerRespawnDelay = 2f;
     [SerializeField] public PlayerMovementController player;
-    [Header("Fruits Collection")]
+    [SerializeField] private GameObject currentCheckpoint;
+    [Space][Header("Fruits Collection")]
     [SerializeField] private int fruitCollected;
-
+    [SerializeField] private int totalFruits;
+    [SerializeField] private Fruit[] allFruits;
+    
     private bool _isRespawning;
     
     private void Awake()
@@ -23,6 +25,15 @@ public class GameManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
         player = FindFirstObjectByType<PlayerMovementController>();
+    }
+
+    private void Start()
+    {
+        playerSpawnPoint = FindAnyObjectByType<StartCheckPoint>().transform;
+        
+        fruitCollected = 0;
+        allFruits = FindObjectsByType<Fruit>(sortMode: FindObjectsSortMode.None);
+        totalFruits = allFruits.Length;
     }
 
     private void Update()
@@ -38,13 +49,13 @@ public class GameManager : MonoBehaviour
     private IEnumerator SpawnPlayerCoroutine()
     {
         yield return new WaitForSeconds(playerRespawnDelay);
-        
+
         GameObject newPlayer = Instantiate(
             playerPrefab, 
-            playerSpawnPoint.position, 
+            currentCheckpoint == null ? playerSpawnPoint.position : currentCheckpoint.transform.position, 
             Quaternion.identity
-        );
-        
+            );
+
         player = newPlayer.GetComponent<PlayerMovementController>();
 
         yield return new WaitForSeconds(playerRespawnDelay / 2);
@@ -52,7 +63,25 @@ public class GameManager : MonoBehaviour
         _isRespawning = false;
     }
 
+    public void AddFruit()
+    {
+        fruitCollected++;
+        print(fruitCollected + " of " + totalFruits + " fruits collected!");
+    }
     
+    public void UpdateActiveCheckPoint(GameObject checkPoint)
+    {
+        if (currentCheckpoint == checkPoint) return;
 
-    public void AddFruit() => fruitCollected++;
+        if (currentCheckpoint != null)
+        {
+            Checkpoint oldCheckpoint = currentCheckpoint.GetComponent<Checkpoint>();
+            if (oldCheckpoint != null)
+            {
+                oldCheckpoint.ResetActiveCheckpoint();
+            }
+        }
+        
+        currentCheckpoint = checkPoint;
+    }
 }
