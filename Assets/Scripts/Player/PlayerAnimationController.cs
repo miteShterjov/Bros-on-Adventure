@@ -43,16 +43,23 @@ namespace Player
 
         private void HandlePlayerAnimEvents()
         {
+            // player moves or is idle
             _animator.SetFloat(MoveAnimParam, _playerMovement.InputMovement.x);
+            
+            // player jumps
             _animator.SetFloat(JumpAnimParam, _playerMovement.GetLinearVelocity().y);
             
+            // player is jumping or not
             _animator.SetBool(JumpingAnimParam, !_playerCollision.IsGrounded);
 
-            // CHANGED: trigger only once, exactly when the 2nd jump occurs.
+            // player does a second jump mid air
             if (_playerMovement.ConsumeDoubleJump())
                 _animator.SetTrigger(DoubleJumpAnimParam);
             
+            // player is sliding on a wall
             _animator.SetBool(WallSlideAnimParam, _playerMovement.CurrentState == PlayerMovementController.State.WallSliding);
+            
+            // player is hurt, takes damage
             _animator.SetBool(PlayerHurtAnimParam, _playerMovement.PlayerIsKnocked);
         }
 

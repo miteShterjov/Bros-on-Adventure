@@ -11,7 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform playerSpawnPoint;
     [SerializeField] private float playerRespawnDelay = 2f;
-    [SerializeField] public PlayerMovementController player;
+    [SerializeField] public PlayerHealthController playerHealth;
     [SerializeField] private GameObject currentCheckpoint;
     [Space][Header("Fruits Collection")]
     [SerializeField] private int fruitCollected;
@@ -24,7 +24,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance == null) Instance = this;
         else Destroy(gameObject);
-        player = FindFirstObjectByType<PlayerMovementController>();
+        playerHealth = FindFirstObjectByType<PlayerHealthController>();
     }
 
     private void Start()
@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
     private void Update()
     {
         // when hp logic is implement change player===null to hp<=0
-        if (player == null && !_isRespawning)
+        if (playerHealth.CurrentHealth == 0 && !_isRespawning)
         {
             _isRespawning = true;
             StartCoroutine(SpawnPlayerCoroutine());
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
             Quaternion.identity
             );
 
-        player = newPlayer.GetComponent<PlayerMovementController>();
+        playerHealth = newPlayer.GetComponent<PlayerHealthController>();
 
         yield return new WaitForSeconds(playerRespawnDelay / 2);
         

@@ -1,3 +1,4 @@
+using System.Collections;
 using GameEffects;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -201,7 +202,7 @@ namespace Player
             }
         }
 
-            private void HandleWallSlidingState()
+        private void HandleWallSlidingState()
             {
                 _rb.gravityScale = 0.1f;
 
@@ -340,6 +341,16 @@ namespace Player
         private void TestingDebugingPlayerDies()
         {
             _playerAnim.DestroyPlayerAnimEvent();
+        }
+
+        public void PushPlayer(Vector2 direction, float duration = 0) => StartCoroutine(PlayerPushCo(direction, duration));
+        
+        private IEnumerator PlayerPushCo(Vector2 direction, float duration)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.AddForce(direction, ForceMode2D.Impulse);
+            
+            yield return new WaitForSeconds(duration);
         }
     }
 }
