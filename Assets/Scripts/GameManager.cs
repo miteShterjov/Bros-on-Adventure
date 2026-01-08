@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int fruitCollected;
     [SerializeField] private int totalFruits;
     [SerializeField] private Fruit[] allFruits;
+    [Header("Traps")] 
+    [SerializeField] public GameObject arrowPrefab;
     
     private bool _isRespawning;
     
@@ -45,6 +47,9 @@ public class GameManager : MonoBehaviour
             StartCoroutine(SpawnPlayerCoroutine());
         }
     }
+    
+    public void SpawnObject(GameObject prefab, Transform spawnPoint, float delay = 0) => 
+        StartCoroutine(SpawnObjectCoroutine(prefab, spawnPoint, delay));
 
     private IEnumerator SpawnPlayerCoroutine()
     {
@@ -61,6 +66,13 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(playerRespawnDelay / 2);
         
         _isRespawning = false;
+    }
+
+    private IEnumerator SpawnObjectCoroutine(GameObject obj, Transform spawnPoint, float delay)
+    {
+        Vector3 spawnPosition = spawnPoint.position;
+        yield return new WaitForSeconds(delay);
+        GameObject spawnedObject = Instantiate(obj, spawnPosition, Quaternion.identity);
     }
 
     public void AddFruit()
