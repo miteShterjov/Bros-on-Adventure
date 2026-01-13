@@ -352,5 +352,7 @@ namespace Player
             
             yield return new WaitForSeconds(duration);
         }
+        
+        public bool PlayerInteracts() => _inputActions.Player.Interact.IsPressed();
     }
 }

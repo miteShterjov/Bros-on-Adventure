@@ -1,3 +1,4 @@
+using Enemy;
 using UnityEngine;
 
 namespace Player
@@ -18,19 +19,46 @@ namespace Player
         [SerializeField] private float wallCheckDistance = 0.4f;
         [SerializeField] public bool isWallDetected;
 
+        [Header("Enemy")] 
+        [SerializeField] private LayerMask enemyLayer;
+        [SerializeField] private float enemyCheckOffset;
+        [SerializeField] private float enemyCheckDistance;
+        [SerializeField] private float bounceForce = 10f;
+
         private PlayerAnimationController _playerAnim;
+        private Rigidbody2D _rb;
 
         private void Awake()
         {
             _playerAnim = GetComponent<PlayerAnimationController>();
+            _rb = GetComponent<Rigidbody2D>();
         }
 
         private void FixedUpdate()
         {
-            WallDirection = (int)_playerAnim.FacingDirection;
+            WallDirection = _playerAnim.FacingDirection;
 
             HandleGroundCheck();
             HandleWallCheck();
+            HandleEnemyCheck();
+        }
+
+        private void HandleEnemyCheck()
+        {
+            if (_rb.linearVelocity.y >= 0) return;
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(
+                transform.position + Vector3.down * enemyCheckOffset,
+                enemyCheckDistance,
+                enemyLayer);
+
+            foreach (var enemy in colliders)
+            {
+                if (enemy != null)
+                {
+                    enemy.GetComponent<EnemyController>().IsDead = true;
+                    PlayerBounceOfTarget();
+                }
+            }
         }
 
         private void HandleGroundCheck()
@@ -68,6 +96,14 @@ namespace Player
             Gizmos.DrawLine(transform.position,
                 transform.position + Vector3.right * WallDirection * wallCheckDistance);
             Gizmos.DrawWireSphere(transform.position + Vector3.right * WallDirection * wallCheckDistance, r);
+
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireSphere(transform.position + Vector3.down * enemyCheckOffset, enemyCheckDistance);
+        }
+
+        private void PlayerBounceOfTarget()
+        {
+            _rb.linearVelocity = new Vector2(_rb.linearVelocity.x, bounceForce);
         }
     }
 }
