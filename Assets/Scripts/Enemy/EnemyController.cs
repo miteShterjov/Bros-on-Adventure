@@ -11,13 +11,16 @@ namespace Enemy
             set => isDead = value;
         }
 
+        private static readonly int MoveAnimParam = Animator.StringToHash("xVelocity");
         private static readonly int Hit = Animator.StringToHash("Hit");
         
         [Header("Movement")] 
         [SerializeField] protected float moveSpeed = 10f;
+        [SerializeField] protected bool canMove = true;
 
         [Header("Basic collision")] 
         [SerializeField] protected LayerMask groundLayer;
+        [SerializeField] protected LayerMask playerLayer;
         [SerializeField] protected float groundCheckDistance = 0.04f;
         [SerializeField] protected float wallCheckDistance = 0.04f;
         [SerializeField] protected float idleDuration = 0.5f;
@@ -34,14 +37,23 @@ namespace Enemy
         protected Animator animator;
         protected Rigidbody2D rigidbody;
 
+        private Collider2D _collider;
+        private Collider2D _colliderInChild;
+
         protected virtual void Awake()
         {
             animator = GetComponent<Animator>();
             rigidbody = GetComponent<Rigidbody2D>();
+            
+            _collider = GetComponent<Collider2D>();
+            _colliderInChild = GetComponentInChildren<Collider2D>();
         }
+        
+        protected virtual void Start() {}
 
         protected virtual void Update()
         {
+            if (!canMove) return;
             if (isDead) HandleEnemyDies();
             
             HandleIdleStatus();
@@ -51,7 +63,7 @@ namespace Enemy
             UpdateAnimEvents();
         }
 
-        protected void FixedUpdate()
+        protected virtual void FixedUpdate()
         {
             idleTimer -= Time.deltaTime;
         }
@@ -72,9 +84,29 @@ namespace Enemy
         
         protected virtual void HandleSpriteFacingSide() => transform.localScale = new Vector3(-facingDirection, 1, 1);
 
-        protected virtual void HandleObjectMovement() {}
+        protected virtual void HandleObjectMovement()
+        {
+            if (_isIdle) return;
+            rigidbody.linearVelocity = new Vector2(moveSpeed * facingDirection, rigidbody.linearVelocity.y);
+        }
 
-        protected virtual void UpdateAnimEvents() {}
+        protected virtual void UpdateAnimEvents()
+        {
+            animator.SetFloat(MoveAnimParam, rigidbody.linearVelocity.x);
+        }
+        
+        protected virtual void HandleEnemyDies()
+        {
+            float destroyDelay = 1f;
+            
+            _collider.enabled = false;
+            _colliderInChild.enabled = false;
+            
+            animator.SetTrigger(Hit);
+            rigidbody.linearVelocity = new Vector2(rigidbody.linearVelocity.x, deathImpact);
+            transform.Rotate(Vector3.forward * deathRotationSpeed * Time.deltaTime);
+            Destroy(gameObject, destroyDelay);
+        }
 
         protected virtual bool IsGroundDetected => Physics2D.Raycast(
             transform.position + Vector3.right * facingDirection * wallCheckDistance,
@@ -87,16 +119,6 @@ namespace Enemy
             Vector2.right * facingDirection, wallCheckDistance,
             groundLayer
         );
-
-        protected virtual void HandleEnemyDies()
-        {
-            float destroyDelay = 1f;
-            
-            animator.SetTrigger(Hit);
-            rigidbody.linearVelocity = new Vector2(rigidbody.linearVelocity.x, deathImpact);
-            transform.Rotate(Vector3.forward * deathRotationSpeed * Time.deltaTime);
-            Destroy(gameObject, destroyDelay);
-        }
 
         protected virtual void OnDrawGizmos()
         {
