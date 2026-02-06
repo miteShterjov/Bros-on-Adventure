@@ -40,14 +40,14 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // when hp logic is implement change player===null to hp<=0
-        if (playerHealth.CurrentHealth == 0 && !_isRespawning)
+        // Check if the player object is missing and we aren't already respawning
+        if (playerHealth == null && !_isRespawning)
         {
             _isRespawning = true;
             StartCoroutine(SpawnPlayerCoroutine());
         }
     }
-    
+
     public void SpawnObject(GameObject prefab, Transform spawnPoint, float delay = 0) => 
         StartCoroutine(SpawnObjectCoroutine(prefab, spawnPoint, delay));
 
@@ -55,16 +55,19 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(playerRespawnDelay);
 
+        Vector3 spawnPos = currentCheckpoint == null ? playerSpawnPoint.position : currentCheckpoint.transform.position;
+
         GameObject newPlayer = Instantiate(
             playerPrefab, 
-            currentCheckpoint == null ? playerSpawnPoint.position : currentCheckpoint.transform.position, 
+            spawnPos, 
             Quaternion.identity
             );
 
+        // Update the reference so the Update loop knows the player is back
         playerHealth = newPlayer.GetComponent<PlayerHealthController>();
 
-        yield return new WaitForSeconds(playerRespawnDelay / 2);
-        
+        // Short buffer to prevent immediate double-respawn if something goes wrong
+        yield return new WaitForSeconds(0.1f); 
         _isRespawning = false;
     }
 

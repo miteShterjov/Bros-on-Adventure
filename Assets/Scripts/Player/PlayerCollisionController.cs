@@ -51,13 +51,17 @@ namespace Player
                 enemyCheckDistance,
                 enemyLayer);
 
-            foreach (var enemy in colliders)
+            foreach (var hit in colliders)
             {
-                if (enemy != null)
-                {
-                    enemy.GetComponent<EnemyController>().IsDead = true;
-                    PlayerBounceOfTarget();
-                }
+                if (hit == null) continue;
+
+                var enemyController = hit.GetComponentInParent<EnemyController>();
+                if (enemyController == null) continue;
+
+                if (enemyController.IsDead) continue;
+
+                enemyController.IsDead = true;
+                PlayerBounceOfTarget();
             }
         }
 
