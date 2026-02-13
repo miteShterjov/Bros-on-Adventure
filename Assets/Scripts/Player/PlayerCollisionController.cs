@@ -58,6 +58,15 @@ namespace Player
                 var enemyController = hit.GetComponentInParent<EnemyController>();
                 if (enemyController == null) continue;
 
+                // IMPORTANT:
+                // Snail needs to receive every stomp (1st/2nd/3rd), even after it became "dead".
+                if (enemyController.TryGetComponent<SnailEnemy>(out var snail))
+                {
+                    snail.OnStompedFromAbove();
+                    PlayerBounceOfTarget();
+                    continue;
+                }
+
                 if (enemyController.IsDead) continue;
 
                 enemyController.IsDead = true;

@@ -23,7 +23,7 @@ namespace Enemy
         [SerializeField] protected LayerMask groundLayer;
         [SerializeField] protected bool isGroundDetected;
         [SerializeField] protected bool isWallDetected;
-        [SerializeField, Tooltip("When Enemy uses the knockback visual effect set the pushback force here.")] private Vector2 customForce = new Vector2(2f, 3f);
+        [SerializeField, Tooltip("When Enemy uses the knockback visual effect set the pushback force here.")] protected Vector2 customForce = new Vector2(2f, 3f);
         [Header("Death"), Space] 
         [SerializeField] protected float deathImpact;
         [SerializeField] protected float deathRotationSpeed;
@@ -199,6 +199,7 @@ namespace Enemy
         }
 
         protected virtual void SetLinearVelocity(float x, float y) => Rigidbody.linearVelocity = new Vector2(x, y);
+        protected virtual void SetLinearVelocity(Vector2 velocity) => Rigidbody.linearVelocity = velocity;
         
         protected virtual void KnockBackVisualEffect()
         {
