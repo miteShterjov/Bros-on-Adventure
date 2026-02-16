@@ -1,11 +1,15 @@
 using Player;
 using System.Collections;
+using Unity.VectorGraphics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public bool IsRespawning => _isRespawning;
+    public static readonly string EndCreditsSceneName = "EndCredits";
+    public static readonly string MainMenuSceneName = "MainMenu";
     
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
@@ -21,6 +25,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] public GameObject arrowPrefab;
     
     private bool _isRespawning;
+    
     
     private void Awake()
     {
@@ -99,4 +104,6 @@ public class GameManager : MonoBehaviour
         
         currentCheckpoint = checkPoint;
     }
+    
+    public void LoadCreditsScene() => SceneManager.LoadScene(EndCreditsSceneName);
 }
