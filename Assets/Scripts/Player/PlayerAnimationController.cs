@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Player
@@ -17,7 +18,12 @@ namespace Player
         
         public bool IsKnocked { get; set; }
         
-        [Header("Sprite Direction")]
+        [Header("Player Visuals")]
+        [SerializeField] private AnimatorOverrideController[] animators;
+
+        [SerializeField] private int userPrefSkinID;
+        
+        [Header("Sprite Direction"), Space]
         [SerializeField] private int facingDirection = 1;
         
         private Animator _animator;
@@ -31,15 +37,23 @@ namespace Player
             _playerCollision = GetComponent<PlayerCollisionController>();
         }
 
+        private void Start()
+        {
+            UserChoosePlayerSkin(2);
+        }
+
         private void Update()
         {
             if (!_animator) return;
+            _animator.runtimeAnimatorController = animators[0];
             HandlePlayerSpriteDirection((int)_playerMovement.InputMovement.x);
             HandlePlayerAnimEvents();
         }
         
         public void RevivePlayerAnimEvent() => _animator.SetTrigger(RevivedAnimParam);
         public void DestroyPlayerAnimEvent() => _animator.SetTrigger(DeadAnimParam);
+        public void UserChoosePlayerSkin(int userPrefSkinID) => _animator.runtimeAnimatorController = animators[userPrefSkinID];
+        
 
         private void HandlePlayerAnimEvents()
         {

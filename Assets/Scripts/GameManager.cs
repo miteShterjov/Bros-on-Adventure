@@ -105,5 +105,7 @@ public class GameManager : MonoBehaviour
         currentCheckpoint = checkPoint;
     }
     
-    public void LoadCreditsScene() => SceneManager.LoadScene(EndCreditsSceneName);
+    private void LoadEndCreditsScene() => SceneManager.LoadScene(EndCreditsSceneName);
+
+    public void LoadCreditsScene() => UI_InGame.Instance.fadeEffect.ScreenFade(1, 1, LoadEndCreditsScene);
 }
