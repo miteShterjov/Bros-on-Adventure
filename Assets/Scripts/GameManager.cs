@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VectorGraphics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,10 @@ public class GameManager : MonoBehaviour
     public static readonly string EndCreditsSceneName = "EndCredits";
     public static readonly string MainMenuSceneName = "MainMenu";
     
+    [Header("Scene Managment")]
+    [SerializeField] private int currentLevelIndex;
+    [SerializeField] private int nextLevelIndex;
+    [SerializeField] private float levelTimer;
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private Transform playerSpawnPoint;
@@ -41,6 +46,9 @@ public class GameManager : MonoBehaviour
         fruitCollected = 0;
         allFruits = FindObjectsByType<Fruit>(sortMode: FindObjectsSortMode.None);
         totalFruits = allFruits.Length;
+        
+        currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
+        nextLevelIndex = currentLevelIndex + 1;
     }
 
     private void Update()
@@ -51,6 +59,11 @@ public class GameManager : MonoBehaviour
             _isRespawning = true;
             StartCoroutine(SpawnPlayerCoroutine());
         }
+        
+        UI_InGame.Instance.UpdateFruitsUI();
+        
+        levelTimer += Time.deltaTime;
+        UI_InGame.Instance.UpdateTImerUI(levelTimer);
     }
 
     public void SpawnObject(GameObject prefab, Transform spawnPoint, float delay = 0) => 
@@ -86,8 +99,10 @@ public class GameManager : MonoBehaviour
     public void AddFruit()
     {
         fruitCollected++;
-        print(fruitCollected + " of " + totalFruits + " fruits collected!");
+        UI_InGame.Instance.UpdateFruitsUI();
     }
+
+    public string FruitsInfo() => fruitCollected + " / " + totalFruits;
     
     public void UpdateActiveCheckPoint(GameObject checkPoint)
     {
@@ -104,8 +119,45 @@ public class GameManager : MonoBehaviour
         
         currentCheckpoint = checkPoint;
     }
-    
-    private void LoadEndCreditsScene() => SceneManager.LoadScene(EndCreditsSceneName);
 
-    public void LoadCreditsScene() => UI_InGame.Instance.fadeEffect.ScreenFade(1, 1, LoadEndCreditsScene);
+    
+
+    public void LevelFinished()
+    {
+        UnlockNextLevel();
+
+        LoadNextScene();
+    }
+
+    private void UnlockNextLevel()
+    {
+        PlayerPrefs.SetInt("Level " + nextLevelIndex + "is Unlocked.", 1);
+        if (NoMoreLevels()) PlayerPrefs.SetInt("ContinueLevelNumber", nextLevelIndex);
+    }
+
+    private void LoadNextLevel() => SceneManager.LoadScene("Level_" + nextLevelIndex);
+
+    private void LoadEndCreditsScene() => SceneManager.LoadScene(EndCreditsSceneName);
+    
+    private void LoadNextScene()
+    {
+        UI_FadeInOutVFX fadeEffect = UI_InGame.Instance.GetComponentInChildren<UI_FadeInOutVFX>();
+        if (fadeEffect == null) Debug.LogError("No UI_FadeInOutVFX component found in UI_InGame!");
+        
+        // 2 cuz of scenes: Main Menu and End Credits
+        int lastLevelIndex = SceneManager.sceneCountInBuildSettings - 2;
+        bool noMoreLevels = currentLevelIndex == lastLevelIndex;
+        
+        if (noMoreLevels) fadeEffect.ScreenFade(1, 1, LoadEndCreditsScene);
+        else fadeEffect.ScreenFade(1, 1, LoadNextLevel);
+    }
+
+    private bool NoMoreLevels()
+    {
+        // 2 cuz of scenes: Main Menu and End Credits
+        int lastLevelIndex = SceneManager.sceneCountInBuildSettings - 2;
+        bool noMoreLevels = currentLevelIndex == lastLevelIndex;
+        
+        return noMoreLevels;
+    }
 }

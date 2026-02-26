@@ -39,7 +39,7 @@ namespace Player
 
         private void Start()
         {
-            UserChoosePlayerSkin(2);
+            UserChoosePlayerSkin(SkinManager.Instance.GetSkinID());
         }
 
         private void Update()

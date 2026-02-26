@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: 8d2062bcaa293854e9ac804f388d1d92
   - enabled: 1
-    path: Assets/Scenes/TheLab.unity
-    guid: 8c9cfa26abfee488c85f1582747f6a02
+    path: Assets/Scenes/Level_1.unity
+    guid: f8f38b0bb00776a91b90f1dbec7eb3b9
+  - enabled: 1
+    path: Assets/Scenes/Level_2.unity
+    guid: e08da102ad7ef797fa8ec1eee7fa516f
+  - enabled: 1
+    path: Assets/Scenes/Level_3.unity
+    guid: 6160096547046248181c974337b8daab
   - enabled: 1
     path: Assets/Scenes/EndCredits.unity
     guid: 28280d70f5acb6bdbb23d667f3f33abc
