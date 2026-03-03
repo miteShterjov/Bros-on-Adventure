@@ -49,6 +49,17 @@ public class GameManager : MonoBehaviour
         
         currentLevelIndex = SceneManager.GetActiveScene().buildIndex;
         nextLevelIndex = currentLevelIndex + 1;
+
+        SaveTotalFruitsForThisLevel();
+    }
+
+    private void SaveTotalFruitsForThisLevel()
+    {
+        string totalFruitsKey = $"Level {currentLevelIndex} : TotalFruits";
+
+        // Save it (and keep it updated if your scene changes later)
+        PlayerPrefs.SetInt(totalFruitsKey, totalFruits);
+        PlayerPrefs.Save();
     }
 
     private void Update()
@@ -120,11 +131,43 @@ public class GameManager : MonoBehaviour
         currentCheckpoint = checkPoint;
     }
 
-    
+    private void SaveFruitInfo()
+    {
+        // Use ONE consistent key format (no accidental missing/extra spaces)
+        string levelFruitKey = $"Level {currentLevelIndex} : Fruits Collected";
+
+        int fruitsCollectedBefore = PlayerPrefs.GetInt(levelFruitKey, 0);
+        if (fruitCollected > fruitsCollectedBefore)
+        {
+            PlayerPrefs.SetInt(levelFruitKey, fruitCollected);
+        }
+
+        // If you intend this to be a lifetime bank, consider whether you want to add
+        // only the NEW fruits (difference) rather than adding fruitCollected every finish.
+        int totalFruitsInBank = PlayerPrefs.GetInt("Total Fruits Amount", 0);
+        PlayerPrefs.SetInt("Total Fruits Amount", totalFruitsInBank + fruitCollected);
+    }
+
+    private void SaveBestTime()
+    {
+        // Remove trailing spaces and make the key consistent
+        string bestTimeKey = $"Level {currentLevelIndex} : BestTime";
+
+        float previousBest = PlayerPrefs.GetFloat(bestTimeKey, float.MaxValue);
+        if (levelTimer < previousBest)
+        {
+            PlayerPrefs.SetFloat(bestTimeKey, levelTimer);
+        }
+    }
 
     public void LevelFinished()
     {
         UnlockNextLevel();
+        SaveFruitInfo();
+        SaveBestTime();
+
+        // Force PlayerPrefs to flush to disk before scene transition
+        PlayerPrefs.Save();
 
         LoadNextScene();
     }
@@ -160,4 +203,6 @@ public class GameManager : MonoBehaviour
         
         return noMoreLevels;
     }
+    
+    
 }
