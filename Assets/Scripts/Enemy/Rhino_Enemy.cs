@@ -1,11 +1,10 @@
 using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
 
 namespace Enemy
 {
     public class RhinoEnemy : EnemyController
     {
-        [Header("Rhino"), Space] 
+        [Space][Header("Rhino")] 
         [SerializeField] private float maxSpeedMultiplier = 2.0f;
         
         private static readonly int WallHitParam = Animator.StringToHash("HitWall");
@@ -17,20 +16,19 @@ namespace Enemy
             if (_isCharging)
             {
                 HandleCollisionDetection();
-                SetLinearVelocity(moveSpeed * facingDirection * maxSpeedMultiplier, Rigidbody.linearVelocity.y);
-
+                SetLinearVelocity(moveSpeed * facingDirection * maxSpeedMultiplier, rigidbody.linearVelocity.y);
 
                 if (!isGroundDetected)
                 {
                     _isCharging = false;
-                    SetLinearVelocity(0f, Rigidbody.linearVelocity.y);
+                    SetLinearVelocity(0f, rigidbody.linearVelocity.y);
                     return;
                 }
 
                 if (isWallDetected)
                 {
                     _isCharging = false;
-                    SetLinearVelocity(0f, Rigidbody.linearVelocity.y);
+                    SetLinearVelocity(0f, rigidbody.linearVelocity.y);
                     DoRhinoWallCollisionSequence();
                     return;
                 }
@@ -45,13 +43,13 @@ namespace Enemy
 
         protected override void HandleAttackState()
         {
-            // Start charge once
+            // Start to charge at once
             if (!_isCharging) _isCharging = true;
         }
 
         private void DoRhinoWallCollisionSequence()
         {
-            Animator.SetTrigger(WallHitParam);
+            animator.SetTrigger(WallHitParam);
             KnockBackVisualEffect();    
         }
     }

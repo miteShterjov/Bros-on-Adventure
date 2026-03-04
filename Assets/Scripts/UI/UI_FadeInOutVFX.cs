@@ -2,32 +2,36 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UI_FadeInOutVFX : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private Image faderImage;
-
-    public void ScreenFade(float targetAlpha, float duration, System.Action onCompleted = null)
+    public class UIFadeInOutVFX : MonoBehaviour
     {
-        StartCoroutine(FadeCoroutine(targetAlpha, duration, onCompleted));
-    }
+        [Header("Config")]
+        [SerializeField] private Image faderImage;
 
-    private IEnumerator FadeCoroutine(float targetAlpha, float duration, System.Action onCompleted)
-    {
-        float time = 0;
-        Color currentColor = faderImage.color;
-        
-        float startAlpha = currentColor.a;
-
-        while (time < duration)
+        public void ScreenFade(float targetAlpha, float duration, System.Action onCompleted = null)
         {
-            time += Time.deltaTime;
-            float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
-            faderImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
-            yield return null;
+            StartCoroutine(FadeCoroutine(targetAlpha, duration, onCompleted));
         }
+
+        private IEnumerator FadeCoroutine(float targetAlpha, float duration, System.Action onCompleted)
+        {
+            float time = 0;
+            Color currentColor = faderImage.color;
         
-        faderImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
+            float startAlpha = currentColor.a;
+
+            while (time < duration)
+            {
+                time += Time.deltaTime;
+                float alpha = Mathf.Lerp(startAlpha, targetAlpha, time / duration);
+                faderImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, alpha);
+                yield return null;
+            }
         
-        onCompleted?.Invoke();
+            faderImage.color = new Color(currentColor.r, currentColor.g, currentColor.b, targetAlpha);
+        
+            onCompleted?.Invoke();
+        }
     }
 }

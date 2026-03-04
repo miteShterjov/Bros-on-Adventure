@@ -1,8 +1,8 @@
 using System.Collections;
 using GameEffects;
+using Managers;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 namespace Player
 {
@@ -11,15 +11,13 @@ namespace Player
     {
         public enum State
         {
-            Idle,
-            Moving,
-            Jumping,
-            Falling,
-            WallSliding
+            Idle, Moving, Jumping, Falling, WallSliding
         }
 
         public State CurrentState => currentState;
+        
         public Vector2 InputMovement => _moveInput;
+        
         public bool PlayerIsKnocked => _knockback.IsKnocked;
 
         public bool ConsumeDoubleJump()
@@ -29,26 +27,25 @@ namespace Player
             return true;
         }
 
-        [Header("Locomotion")]
+        [Header("Locomotion")] 
         [SerializeField] private float moveSpeed = 5f;
         [SerializeField] private float jumpForce = 7.5f;
         [SerializeField] private int jumpCap = 2;
         [SerializeField] private int jumpCounter;
         [SerializeField] private bool isDoubleJumping;
 
-        [Header("Air Control")]
+        [Space][Header("Air Control")] 
         [SerializeField] private float airMoveSpeedMultiplier = 1.0f;
 
-        [Header("Wall Jump")]
+        [Space][Header("Wall Jump")] 
         [SerializeField] private float wallJumpHorizontalSpeed = 5f;
         [SerializeField] private float wallJumpLockDuration = 0.12f;
 
-        [Header("Jump Buffer")]
+        [Space][Header("Jump Buffer")] 
         [SerializeField] private float jumpBufferTime = 0.12f;
-        [FormerlySerializedAs("_jumpBufferTimer")] [SerializeField] private float jumpBufferTimer;
+        [SerializeField] private float jumpBufferTimer;
 
-        [Header("Debug")]
-        [SerializeField] private State currentState;
+        [Space][Header("Debug")] [SerializeField] private State currentState;
 
         private Rigidbody2D _rb;
         private InputSystem_Actions _inputActions;
@@ -56,69 +53,98 @@ namespace Player
         private PlayerCollisionController _playerCollision;
         private PlayerAnimationController _playerAnim;
         private KnockbackVFX _knockback;
-
-
         private float _wallJumpLockTimer;
+
+        private bool _inputsEnabled;
+        private System.Action<InputAction.CallbackContext> _onTestPerformed;
 
         private void Awake()
         {
             currentState = State.Idle;
             _rb = GetComponent<Rigidbody2D>();
-            _inputActions = new InputSystem_Actions();
             _playerCollision = GetComponent<PlayerCollisionController>();
             _playerAnim = GetComponent<PlayerAnimationController>();
             _knockback = GetComponent<KnockbackVFX>();
+            _inputActions = new InputSystem_Actions();
 
             _inputActions.Player.Move.performed += OnMove;
             _inputActions.Player.Move.canceled += OnMoveCanceled;
             _inputActions.Player.Jump.performed += OnJump;
-            _inputActions.Player.Test.performed += ctx => TestingDebugingPlayerDies();
+
+            _onTestPerformed = _ => TestingDebugPlayerDies();
+            _inputActions.Player.Test.performed += _onTestPerformed;
         }
 
         private void Update()
         {
             if (PlayerIsKnocked) return;
-            
-            if (GameManager.Instance.IsRespawning)
+
+            bool isRespawning = GameManager.Instance.IsRespawning;
+
+            if (isRespawning)
             {
-                _inputActions.Player.Disable();
+                if (_inputsEnabled)
+                {
+                    _inputActions.Player.Disable();
+                    _inputsEnabled = false;
+                }
+
                 _moveInput = Vector2.zero;
                 SetLinearVelocity(0, _rb.linearVelocity.y);
                 return;
-            } 
-            else if (!GameManager.Instance.IsRespawning) _inputActions.Player.Enable();
-            
+            }
 
-            if (jumpBufferTimer > 0f)
-                jumpBufferTimer -= Time.deltaTime;
+            if (!_inputsEnabled)
+            {
+                _inputActions.Player.Enable();
+                _inputsEnabled = true;
+            }
 
-            if (_wallJumpLockTimer > 0f)
-                _wallJumpLockTimer -= Time.deltaTime;
+            if (jumpBufferTimer > 0f) jumpBufferTimer -= Time.deltaTime;
+            if (_wallJumpLockTimer > 0f) _wallJumpLockTimer -= Time.deltaTime;
 
             TryConsumeBufferedJump();
 
-            HandlePlayerState();
             HandlePlayerStateTransition();
         }
 
         private void FixedUpdate()
         {
-            if (_playerCollision.IsGrounded && _rb.linearVelocity.y == 0 && jumpCounter > 0)
-                jumpCounter = 0;
+            if (_playerCollision.IsGrounded)
+            {
+                float vy = _rb.linearVelocity.y;
+                if (Mathf.Abs(vy) < 0.01f && jumpCounter > 0)
+                    jumpCounter = 0;
+            }
 
-            if (currentState != State.WallSliding) _rb.gravityScale = 1f;
+            if (currentState != State.WallSliding)
+                _rb.gravityScale = 1f;
+
+            HandlePlayerState();
         }
 
-        private void OnEnable() => _inputActions.Player.Enable();
-        private void OnDisable() => _inputActions.Player.Disable();
+        private void OnEnable()
+        {
+            _inputActions.Player.Enable();
+            _inputsEnabled = true;
+        }
+
+        private void OnDisable()
+        {
+            _inputActions.Player.Disable();
+            _inputsEnabled = false;
+        }
 
         private void OnDestroy()
         {
             if (_inputActions != null)
             {
                 _inputActions.Player.Move.performed -= OnMove;
-                _inputActions.Player.Move.canceled -= OnMove;
+                _inputActions.Player.Move.canceled -= OnMoveCanceled;
                 _inputActions.Player.Jump.performed -= OnJump;
+
+                if (_onTestPerformed != null)
+                    _inputActions.Player.Test.performed -= _onTestPerformed;
 
                 _inputActions.Dispose();
             }
@@ -132,17 +158,11 @@ namespace Player
             float vy = _rb.linearVelocity.y;
 
             bool isFalling = vy < -0.01f;
-            bool isRising  = vy >  0.01f;
-
-            bool pressingTowardsWall = true;
-                // Mathf.Abs(_moveInput.x) > 0.01f &&
-                // Mathf.Sign(_moveInput.x) == _playerCollision.WallDirection;
+            bool isRising = vy > 0.01f;
 
             // 1) Grounded resolves everything else
             if (grounded)
             {
-                if (_playerCollision.IsWallDetected) currentState = State.Idle;
-                
                 currentState = Mathf.Abs(_moveInput.x) > 0.01f ? State.Moving : State.Idle;
                 return;
             }
@@ -157,12 +177,11 @@ namespace Player
                 }
 
                 if (isRising) currentState = State.Jumping;
-
                 return;
             }
 
             // 2) Airborne: WallSlide has priority over Falling
-            if (isFalling && wallDetected && pressingTowardsWall)
+            if (isFalling && wallDetected)
             {
                 currentState = State.WallSliding;
                 return;
@@ -179,7 +198,7 @@ namespace Player
 
             // Otherwise: keep the currentState (prevents state flicker when vy ~ 0 midair)
         }
-
+        
         private void HandlePlayerState()
         {
             switch (currentState)
@@ -199,25 +218,28 @@ namespace Player
                 case State.WallSliding:
                     HandleWallSlidingState();
                     break;
+                default:
+                    HandleIdleState();
+                    break;
             }
         }
 
         private void HandleWallSlidingState()
-            {
-                _rb.gravityScale = 0.1f;
+        {
+            _rb.gravityScale = 0.1f;
 
-                // Allow wall jump even if we previously used up jumps in the air.
-                // This is classic behavior: touching a wall "refreshes" your jump options.
-                if (jumpCounter != 0) jumpCounter = 0;
+            // Allow wall jump even if we previously used up jumps in the air.
+            // This is classic behavior: touching a wall "refreshes" your jump options.
+            if (jumpCounter != 0) jumpCounter = 0;
 
-                if (isDoubleJumping) isDoubleJumping = false;
+            if (isDoubleJumping) isDoubleJumping = false;
 
-                if ((int)_moveInput.x != 0 && (int)_moveInput.x != _playerAnim.FacingDirection)
-                    currentState = State.Idle;
+            if ((int)_moveInput.x != 0 && (int)_moveInput.x != _playerAnim.FacingDirection)
+                currentState = State.Idle;
 
-                // Wall jump is handled in OnJump() so it can't double-trigger.
-                // if (_inputActions.Player.Jump.WasPressedThisFrame()) OnWallJump();
-            }
+            // Wall jump is handled in OnJump() so it can't double-trigger.
+            // if (_inputActions.Player.Jump.WasPressedThisFrame()) OnWallJump();
+        }
 
         private void HandleFallingState()
         {
@@ -332,27 +354,27 @@ namespace Player
             jumpCounter++;
         }
 
-
         private void SetLinearVelocity(float x, float y) => _rb.linearVelocity = new Vector2(x, y);
         // private void SetLinearVelocity(Vector2 velocity) => _rb.linearVelocity = velocity;
 
         public Vector2 GetLinearVelocity() => _rb.linearVelocity;
 
-        private void TestingDebugingPlayerDies()
+        private void TestingDebugPlayerDies()
         {
             _playerAnim.DestroyPlayerAnimEvent();
         }
 
-        public void PushPlayer(Vector2 direction, float duration = 0) => StartCoroutine(PlayerPushCo(direction, duration));
-        
+        public void PushPlayer(Vector2 direction, float duration = 0) =>
+            StartCoroutine(PlayerPushCo(direction, duration));
+
         private IEnumerator PlayerPushCo(Vector2 direction, float duration)
         {
             _rb.linearVelocity = Vector2.zero;
             _rb.AddForce(direction, ForceMode2D.Impulse);
-            
+
             yield return new WaitForSeconds(duration);
         }
-        
+
         public bool PlayerInteracts() => _inputActions.Player.Interact.IsPressed();
     }
 }

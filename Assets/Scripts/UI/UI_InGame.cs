@@ -1,29 +1,31 @@
-using System;
+using Managers;
 using TMPro;
 using UnityEngine;
 
-public class UI_InGame : MonoBehaviour
+namespace UI
 {
-    public static UI_InGame Instance;
-    public UI_FadeInOutVFX FadeEffect { get; private set; }
+    public class UIInGame : MonoBehaviour
+    {
+        public static UIInGame Instance;
+        // public UIFadeInOutVFX FadeEffect { get; private set; }
     
-    [SerializeField] private TextMeshProUGUI fruitText;
-    [SerializeField] private TextMeshProUGUI timerText;
+        [SerializeField] private TextMeshProUGUI fruitText;
+        [SerializeField] private TextMeshProUGUI timerText;
 
-    private void Awake()
-    {
-        Instance = this;
-        
-        FadeEffect = GetComponentInChildren<UI_FadeInOutVFX>();
-    }
+        private void Awake()
+        {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+        }
 
-    public void UpdateFruitsUI()
-    {
-        fruitText.text = GameManager.Instance.FruitsInfo();
-    }
+        public void UpdateFruitsUI()
+        {
+            fruitText.text = GameManager.Instance.FruitsInfo();
+        }
 
-    public void UpdateTImerUI(float timer)
-    {
-        timerText.text = timer.ToString("00") + " s";
+        public void UpdateTImerUI(float timer)
+        {
+            timerText.text = timer.ToString("00") + " s";
+        }
     }
 }

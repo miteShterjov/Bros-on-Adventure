@@ -539,10 +539,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 385267586}
     m_Modifications:
-    - target: {fileID: 1356279509999023562, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
-      propertyPath: m_text
-      value: Back
-      objectReference: {fileID: 0}
     - target: {fileID: 3261358486195939716, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -628,25 +624,13 @@ PrefabInstance:
       value: Back
       objectReference: {fileID: 0}
     - target: {fileID: 8097748023670728031, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8097748023670728031, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 204912064}
     - target: {fileID: 8097748023670728031, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: SwichUI
-      objectReference: {fileID: 0}
-    - target: {fileID: 8097748023670728031, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgument
       value: 
       objectReference: {fileID: 828969219}
-    - target: {fileID: 8097748023670728031, guid: 1b90f6596a05a6ab39efa6bd949ac94e, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
-      value: UnityEngine.GameObject, UnityEngine
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1026,7 +1010,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &828969221
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5259,7 +5243,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI_SkinSelection
   currentIndex: 0
   maxIndex: 3
-  skindDisplayed: {fileID: 1944479492}
+  skinDisplayed: {fileID: 0}
 --- !u!1001 &2760145021732875917
 PrefabInstance:
   m_ObjectHideFlags: 0

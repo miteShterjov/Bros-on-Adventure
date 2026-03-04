@@ -7,7 +7,6 @@ namespace Player
     {
         public bool IsGrounded => isGrounded;
         public bool IsWallDetected => isWallDetected;
-
         public int WallDirection { get; private set; }
 
         [Header("Ground")]
@@ -15,11 +14,11 @@ namespace Player
         [SerializeField] private float groundCheckDistance = 0.4f;
         [SerializeField] public bool isGrounded;
 
-        [Header("Wall")]
+        [Space][Header("Wall")]
         [SerializeField] private float wallCheckDistance = 0.4f;
         [SerializeField] public bool isWallDetected;
 
-        [Header("Enemy")] 
+        [Space][Header("Enemy")] 
         [SerializeField] private LayerMask enemyLayer;
         [SerializeField] private float enemyCheckOffset;
         [SerializeField] private float enemyCheckDistance;
@@ -51,12 +50,12 @@ namespace Player
                 enemyCheckDistance,
                 enemyLayer);
 
-            foreach (var hit in colliders)
+            foreach (Collider2D hit in colliders)
             {
-                if (hit == null) continue;
+                if (!hit) continue;
 
-                var enemyController = hit.GetComponentInParent<EnemyController>();
-                if (enemyController == null) continue;
+                EnemyController enemyController = hit.GetComponentInParent<EnemyController>();
+                if (!enemyController) continue;
 
                 // IMPORTANT:
                 // Snail needs to receive every stomp (1st/2nd/3rd), even after it became "dead".
@@ -96,7 +95,7 @@ namespace Player
 
         private void OnDrawGizmos()
         {
-            float r = 0.04f;
+            const float r = 0.04f;
 
             // Ground
             Gizmos.color = isGrounded ? Color.green : Color.red;

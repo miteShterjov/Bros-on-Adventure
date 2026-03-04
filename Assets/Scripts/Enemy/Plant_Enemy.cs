@@ -14,8 +14,8 @@ namespace Enemy
             
             if (isShooter)
             {
-                if (_timer > attackSpeed) canShoot = true;
-                else if (_timer < attackSpeed) canShoot = false;
+                if (timer > attackSpeed) canShoot = true;
+                else if (timer < attackSpeed) canShoot = false;
             }
         }
 
@@ -23,7 +23,7 @@ namespace Enemy
         {
             if (canShoot)
             {
-                Animator.SetTrigger(ShotAnimParamm);
+                animator.SetTrigger(ShotAnimParamm);
                 Shoot();
             }
         }

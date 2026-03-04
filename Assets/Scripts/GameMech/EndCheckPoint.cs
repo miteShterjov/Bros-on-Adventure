@@ -1,26 +1,30 @@
-using System;
+using Managers;
 using UnityEngine;
 
-public class EndCheckPoint : MonoBehaviour
+namespace GameMech
 {
-    private Animator _animator;
-    private static readonly int LevelFinishedAnimTEvent = Animator.StringToHash("pressed");
-    
-    private void Awake()
+    public class EndCheckPoint : MonoBehaviour
     {
-        _animator = GetComponentInChildren<Animator>();
-    }
+        private Animator _animator;
+        
+        private static readonly int LevelFinishedAnimTEvent = Animator.StringToHash("pressed");
     
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player")) RunLevelFinished();
-    }
+        private void Awake()
+        {
+            _animator = GetComponentInChildren<Animator>();
+        }
+    
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag("Player")) RunLevelFinished();
+        }
 
-    private void RunLevelFinished()
-    {
-        _animator.SetTrigger(LevelFinishedAnimTEvent);
-        print("Level finished!");
-        // when levels redo should load next scene!
-        GameManager.Instance.LevelFinished();
+        private void RunLevelFinished()
+        {
+            _animator.SetTrigger(LevelFinishedAnimTEvent);
+            print("Level finished!");
+            // when levels redo should load the next scene!
+            GameManager.Instance.LevelFinished();
+        }
     }
 }

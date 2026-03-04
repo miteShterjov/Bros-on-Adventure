@@ -1,15 +1,15 @@
-using System;
 using UnityEngine;
 
 namespace Enemy
 {
     public class BulletEnemy : MonoBehaviour
     {
+        public int Direction { get; set; }
+        
+        [Header("Config")]
         [SerializeField] private float moveSpeed = 10f;
         [SerializeField] private Sprite bulletSprite0;
         [SerializeField] private Sprite bulletSprite1;
-
-        public int Direction { get; set; }
 
         private void Update()
         {
@@ -18,16 +18,17 @@ namespace Enemy
 
         private void OnCollisionEnter2D(Collision2D other)
         {
+            if (!other.gameObject.CompareTag("Player")) return;
             ShatterBulletOnCollision();
         }
 
-        private void ShatterBulletOnCollision()
+        private static void ShatterBulletOnCollision()
         {
-            // need work done,
-            // when bullet hits a target is shaters in 2 piesces.
-            // they fall to the ground and 
-            // after x time is gone they are destroyed
-            
+            // This method needs a lot of work done.
+            // When the bullet hits the target, it shatters in 2 pieces.
+            // They fall to the ground.  
+            // After x time is gone they are destroyed.
+            // I'm just not sure this to apply only to player or ground too?
         }
     }
 }

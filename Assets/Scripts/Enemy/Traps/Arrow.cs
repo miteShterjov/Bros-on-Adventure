@@ -1,5 +1,6 @@
 using System;
 using Enemy.Traps;
+using Managers;
 using Player;
 using UnityEngine;
 

@@ -4,7 +4,8 @@ namespace GameEffects
 {
     public class DestroySelf : MonoBehaviour
     {
-        [SerializeField] private float destroyDelay = 0f;
+        [Header("Config")]
+        [SerializeField][Range(0, 10)] private float destroyDelay;
 
         public void DestroyGameObject()
         {

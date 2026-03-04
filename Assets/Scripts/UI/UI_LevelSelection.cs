@@ -1,44 +1,47 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class UI_LevelSelection : MonoBehaviour
+namespace UI
 {
-    [SerializeField] private UI_LevelButton buttonPrefab;
-    [SerializeField] private Transform buttonParent;
-    [SerializeField] private bool[] levelsUnlocked;
-
-    private void Start()
+    public class UILevelSelection : MonoBehaviour
     {
-        LoadLevelsInfo();
-        CreateLevelButtons();
-    }
+        [Header("Level Buttons")]
+        [SerializeField] private UILevelButton buttonPrefab;
+        [SerializeField] private Transform buttonParent;
+        [SerializeField] private bool[] levelsUnlocked;
 
-    private void CreateLevelButtons()
-    {
-        int levelAmounts = SceneManager.sceneCountInBuildSettings - 1;
-
-        for (int i = 1; i < levelAmounts; i++)
+        private void Start()
         {
-            if (!IsLevelUnlocked(i)) return;
-            UI_LevelButton newButton = Instantiate(buttonPrefab, buttonParent);
-            newButton.SetupButton(i);
+            LoadLevelsInfo();
+            CreateLevelButtons();
         }
-    }
 
-    private void LoadLevelsInfo()
-    {
-        int levelsAmount = SceneManager.sceneCountInBuildSettings - 1;
-        
-        levelsUnlocked = new bool[levelsAmount];
-        
-        for (int i = 1; i < levelsAmount; i++)
+        private void CreateLevelButtons()
         {
-            bool levelIsUnlocked = PlayerPrefs.GetInt("Level " + i + "is Unlocked.", 0) == 1;
-            if (levelIsUnlocked) levelsUnlocked[i] = true;
+            int levelAmounts = SceneManager.sceneCountInBuildSettings - 1;
+
+            for (int i = 1; i < levelAmounts; i++)
+            {
+                if (!IsLevelUnlocked(i)) return;
+                UILevelButton newButton = Instantiate(buttonPrefab, buttonParent);
+                newButton.SetupButton(i);
+            }
         }
-        levelsUnlocked[1] = true;
-    }
+
+        private void LoadLevelsInfo()
+        {
+            int levelsAmount = SceneManager.sceneCountInBuildSettings - 1;
+        
+            levelsUnlocked = new bool[levelsAmount];
+        
+            for (int i = 1; i < levelsAmount; i++)
+            {
+                bool levelIsUnlocked = PlayerPrefs.GetInt("Level " + i + "is Unlocked.", 0) == 1;
+                if (levelIsUnlocked) levelsUnlocked[i] = true;
+            }
+            levelsUnlocked[1] = true;
+        }
     
-    private bool IsLevelUnlocked(int levelIndex) => levelsUnlocked[levelIndex];
+        private bool IsLevelUnlocked(int levelIndex) => levelsUnlocked[levelIndex];
+    }
 }

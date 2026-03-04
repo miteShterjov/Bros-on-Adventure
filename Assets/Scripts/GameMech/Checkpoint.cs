@@ -1,36 +1,41 @@
-using System;
+using Managers;
 using UnityEngine;
 
-public class Checkpoint : MonoBehaviour
+namespace GameMech
 {
-    [SerializeField] private bool isActiveCheckpoint = false;
-    private bool _wasActiveCheckpoint = false;
-
-    private static readonly int ActiveCheckpointParam = Animator.StringToHash("isActive");
-    private Animator _animator;
-
-    private void Awake()
+    public class Checkpoint : MonoBehaviour
     {
-        _animator = GetComponentInChildren<Animator>();
-    }
+        [ Header("Checkpoint")]
+        [SerializeField] private bool isActiveCheckpoint = false;
+        
+        private bool _wasActiveCheckpoint = false;
+        private Animator _animator;
+        
+        private static readonly int ActiveCheckpointParam = Animator.StringToHash("isActive");
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (isActiveCheckpoint || _wasActiveCheckpoint) return;
-        if (other.CompareTag("Player")) SetActiveCheckpoint();
-    }
+        private void Awake()
+        {
+            _animator = GetComponentInChildren<Animator>();
+        }
 
-    private void SetActiveCheckpoint()
-    {
-        isActiveCheckpoint = true;
-        _animator.SetBool(ActiveCheckpointParam, isActiveCheckpoint);
-        GameManager.Instance.UpdateActiveCheckPoint(gameObject);
-    }
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (isActiveCheckpoint || _wasActiveCheckpoint) return;
+            if (other.CompareTag("Player")) SetActiveCheckpoint();
+        }
 
-    public void ResetActiveCheckpoint()
-    {
-        isActiveCheckpoint = false;
-        _wasActiveCheckpoint = true;
-        _animator.SetBool(ActiveCheckpointParam, isActiveCheckpoint);
+        private void SetActiveCheckpoint()
+        {
+            isActiveCheckpoint = true;
+            _animator.SetBool(ActiveCheckpointParam, isActiveCheckpoint);
+            GameManager.Instance.UpdateActiveCheckPoint(gameObject);
+        }
+
+        public void ResetActiveCheckpoint()
+        {
+            isActiveCheckpoint = false;
+            _wasActiveCheckpoint = true;
+            _animator.SetBool(ActiveCheckpointParam, isActiveCheckpoint);
+        }
     }
 }

@@ -6,12 +6,12 @@ namespace GameEffects
     {
         private Animator _animator;
 
-        void Awake()
+        private void Awake()
         {
             _animator = GetComponentInChildren<Animator>();
         }
 
-        void Start()
+        private void Start()
         {
             AnimatorStateInfo stateInfo = _animator.GetCurrentAnimatorStateInfo(0);
             _animator.Play(stateInfo.fullPathHash, -1, Random.Range(0f, 1f));

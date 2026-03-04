@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace Enemy.Traps
@@ -7,9 +6,11 @@ namespace Enemy.Traps
     {
         public bool IsActive { get => isActive; set => isActive = value;}
         
+        [Header("Config")]
+        [SerializeField] private bool isActive;
+        
         private static readonly int IsActiveParam = Animator.StringToHash("isActive");
 
-        [SerializeField] private bool isActive;
         private Animator _animator;
         private Collider2D _collider;
 

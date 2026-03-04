@@ -20,7 +20,7 @@ namespace Enemy
         [SerializeField] private float destroyDelay = 1.5f;
 
         private GameObject _snailSprite;
-        private bool itsPhaseTwo;
+        private bool _itsPhaseTwo;
 
         private static readonly int HitSnail = Animator.StringToHash("HitSnail");
         private static readonly int ShellHitTop = Animator.StringToHash("ShellHitTop");
@@ -33,11 +33,11 @@ namespace Enemy
             // When shell is moving (after 2nd stomp), bounce off walls.
             if (stompCount >= 2 && isWallDetected)
             {
-                Animator.SetTrigger(ShellHitWall);
+                animator.SetTrigger(ShellHitWall);
                 HandleFacingDirection();
             }
             
-            if (itsPhaseTwo) SetLinearVelocity(moveSpeed * shellSpeedMultiplier * facingDirection, Rigidbody.linearVelocity.y);
+            if (_itsPhaseTwo) SetLinearVelocity(moveSpeed * shellSpeedMultiplier * facingDirection, rigidbody.linearVelocity.y);
         }
 
         /// <summary>
@@ -80,7 +80,7 @@ namespace Enemy
         private void PhaseOneJustShellIdle()
         {
             SetLinearVelocity(Vector2.zero);
-            Animator.SetTrigger(HitSnail);
+            animator.SetTrigger(HitSnail);
             KnockBackVisualEffect();
             
             if (snailNoShellPrefab != null)
@@ -96,18 +96,18 @@ namespace Enemy
         {
             // Example behaviour: start sprinting in current facing direction.
             // Tweak speed as you like (could also use a separate serialized shellSpeed).
-            itsPhaseTwo = true;
+            _itsPhaseTwo = true;
 
             // Optional: animator trigger for "shell got hit from top"
-            Animator.SetTrigger(ShellHitTop);
+            animator.SetTrigger(ShellHitTop);
         }
 
         // 3rd stomp: shell dies
         private void PhaseThreeShellKilled()
         {
             SetLinearVelocity(Vector2.zero);
-            itsPhaseTwo = false;https://docs.google.com/spreadsheets/d/1FV8fqkk9W8kOiuTdIjD20IiRGeERON-2SYLjFZVdKo4/edit?usp=sharing
-            Animator.SetTrigger(ShellHitTop);
+            _itsPhaseTwo = false;https://docs.google.com/spreadsheets/d/1FV8fqkk9W8kOiuTdIjD20IiRGeERON-2SYLjFZVdKo4/edit?usp=sharing
+            animator.SetTrigger(ShellHitTop);
             KnockBackVisualEffect();
 
             Destroy(gameObject, destroyDelay);

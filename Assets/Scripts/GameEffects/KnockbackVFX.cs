@@ -30,7 +30,10 @@ namespace GameEffects
         {
             if (!canBeKnocked) return;
             StartCoroutine(KnockbackCo());
-            _rigidbody.linearVelocity = new Vector2(knockbackPower.x * -_playerAnim.FacingDirection, knockbackPower.y);
+            _rigidbody.linearVelocity = new Vector2(
+                knockbackPower.x * -_playerAnim.FacingDirection, 
+                knockbackPower.y
+                );
         }
     
         private IEnumerator KnockbackCo()

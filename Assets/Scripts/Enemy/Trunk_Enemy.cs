@@ -12,8 +12,8 @@ namespace Enemy
             
             if (isShooter)
             {
-                if (_timer > attackSpeed) canShoot = true;
-                else if (_timer < attackSpeed) canShoot = false;
+                if (timer > attackSpeed) canShoot = true;
+                else if (timer < attackSpeed) canShoot = false;
             }
         }
         
@@ -28,8 +28,8 @@ namespace Enemy
             base.HandleAttackState();
             if (canShoot)
             {
-                SetLinearVelocity(0, Rigidbody.linearVelocity.y);
-                Animator.SetTrigger(ShotAnimParamm);
+                SetLinearVelocity(0, rigidbody.linearVelocity.y);
+                animator.SetTrigger(ShotAnimParamm);
                 Shoot();
             }
         }

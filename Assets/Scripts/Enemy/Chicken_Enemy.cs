@@ -4,9 +4,8 @@ namespace Enemy
 {
     public class ChickenEnemy : EnemyController
     {
-        [Header("Chicken"), Space] [SerializeField]
-        protected float speedMultiplier = 1.5f; // max multiplier after ramp-up
-
+        [Space][Header("Chicken")] 
+        [SerializeField] protected float speedMultiplier = 1.5f; // max multiplier after ramp-up
         [SerializeField] private float aggroRampUpTime = 2.0f; // seconds to reach max multiplier
 
         private float _aggroTime;
@@ -39,7 +38,7 @@ namespace Enemy
         {
             if (!isGroundDetected || isWallDetected)
             {
-                SetLinearVelocity(0f, Rigidbody.linearVelocity.y);
+                SetLinearVelocity(0f, rigidbody.linearVelocity.y);
                 return;
             }
 
@@ -48,7 +47,7 @@ namespace Enemy
             float t = aggroRampUpTime <= 0f ? 1f : Mathf.Clamp01(_aggroTime / aggroRampUpTime);
             float currentMultiplier = Mathf.Lerp(1f, speedMultiplier, t);
 
-            SetLinearVelocity(moveSpeed * currentMultiplier * facingDirection, Rigidbody.linearVelocity.y);
+            SetLinearVelocity(moveSpeed * currentMultiplier * facingDirection, rigidbody.linearVelocity.y);
         }
     }
 }

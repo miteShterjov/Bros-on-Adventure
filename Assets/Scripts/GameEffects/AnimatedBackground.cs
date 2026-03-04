@@ -1,36 +1,39 @@
-using System;
 using UnityEngine;
 
-public enum BackgroundType { Blue, Brown, Gray, Green, Pink, Purple, Yellow }
-
-public class AnimatedBackground : MonoBehaviour
+namespace GameEffects
 {
-    [Header("Color")]
-    [SerializeField] private BackgroundType backgroundType;
-    [SerializeField] private Texture2D[] textures;
-    [Header("Movement"), Space]
-    [SerializeField] private Vector2 movementDirection;
-    private MeshRenderer mesh;
+    public enum BackgroundType { Blue, Brown, Gray, Green, Pink, Purple, Yellow }
 
-    private void Awake()
+    public class AnimatedBackground : MonoBehaviour
     {
-        mesh = GetComponent<MeshRenderer>();
-    }
+        [Header("Color")]
+        [SerializeField] private BackgroundType backgroundType;
+        [SerializeField] private Texture2D[] textures;
+        [Space][Header("Movement")]
+        [SerializeField] private Vector2 movementDirection;
+        
+        private MeshRenderer _mesh;
 
-    private void Start()
-    {
-        UpdateBackgroundTexture();
-    }
+        private void Awake()
+        {
+            _mesh = GetComponent<MeshRenderer>();
+        }
 
-    private void Update()
-    {
-        mesh.sharedMaterial.mainTextureOffset += movementDirection * Time.deltaTime;
-    }
+        private void Start()
+        {
+            UpdateBackgroundTexture();
+        }
+
+        private void Update()
+        {
+            _mesh.sharedMaterial.mainTextureOffset += movementDirection * Time.deltaTime;
+        }
     
-    [ContextMenu("Update Background Texture")]
-    private void UpdateBackgroundTexture()
-    {
-        if (mesh == null) mesh = GetComponent<MeshRenderer>();
-        mesh.material.mainTexture = textures[(int)backgroundType];
+        [ContextMenu("Update Background Texture")]
+        private void UpdateBackgroundTexture()
+        {
+            if (_mesh == null) _mesh = GetComponent<MeshRenderer>();
+            _mesh.material.mainTexture = textures[(int)backgroundType];
+        }
     }
 }

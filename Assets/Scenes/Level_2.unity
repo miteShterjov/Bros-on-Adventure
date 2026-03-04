@@ -919,7 +919,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -2.2281196e-10, y: 0.000000054178848, z: 1.2071695e-17, w: 1}
-  m_LocalPosition: {x: 9.532211, y: 0.19508004, z: 0}
+  m_LocalPosition: {x: 9.530041, y: 0.19508004, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -13338,6 +13338,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2421670714895086106, guid: 4a22fde50be1fd588a823216c9d1e8c4, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5807422919310623975, guid: 4a22fde50be1fd588a823216c9d1e8c4, type: 3}
+      propertyPath: userPrefSkinID
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5807422919310623975, guid: 4a22fde50be1fd588a823216c9d1e8c4, type: 3}

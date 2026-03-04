@@ -6,7 +6,6 @@ namespace Enemy
         protected override void Update()
         {
             base.Update();
-
             if (!isGroundDetected || isWallDetected) DoPatrolSequence();
         }
     }

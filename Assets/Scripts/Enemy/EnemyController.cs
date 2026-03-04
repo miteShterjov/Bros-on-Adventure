@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace Enemy
@@ -12,40 +11,39 @@ namespace Enemy
             set => isDead = value;
         }
 
-        [Header("Movement"), Space]
+        [Header("Movement")]
         [SerializeField] protected float moveSpeed = 5f;
         [SerializeField] protected int facingDirection;
         [SerializeField] protected bool isFacingLeft;
         [SerializeField] protected bool isPatrolling;
-        [Header("Collision"), Space]
+        [Space][Header("Collision")]
         [SerializeField] protected float groundCheckDistance;
         [SerializeField] protected float wallCheckDistance;
         [SerializeField] protected LayerMask groundLayer;
         [SerializeField] protected bool isGroundDetected;
         [SerializeField] protected bool isWallDetected;
         [SerializeField, Tooltip("When Enemy uses the knockback visual effect set the pushback force here.")] protected Vector2 customForce = new Vector2(2f, 3f);
-        [Header("Death"), Space] 
+        [Space][Header("Death")] 
         [SerializeField] protected float deathImpact;
         [SerializeField] protected float deathRotationSpeed;
         [SerializeField] protected bool isDead;
-        [Header("Attack"), Space]
+        [Space][Header("Attack")]
         [SerializeField] protected float aggroRange;
         [SerializeField] protected bool hasAggro;
         [SerializeField] protected bool hasBackAggro;
         [SerializeField] private LayerMask playerLayer;
-
-        [Header("Shooter"), Space] 
+        [Space][Header("Shooter")] 
         [SerializeField] protected bool isShooter;
         [SerializeField] protected BulletEnemy bulletPrefab;
         [SerializeField] protected float attackSpeed;
         
-        protected Rigidbody2D Rigidbody;
-        protected Animator Animator;
+        protected new Rigidbody2D rigidbody;
+        protected Animator animator;
         private Collider2D _collider;
         private Collider2D _colliderInChild;
         private Coroutine _patrolCoroutine;
 
-        protected float _timer = 0;
+        protected float timer;
         protected bool canShoot;
         
         private static readonly int AnimHitParam = Animator.StringToHash("Hit");
@@ -57,16 +55,16 @@ namespace Enemy
 
             // Optional: keep the sprite/object visually consistent in the editor too.
             // If you don't want OnValidate touching scale, delete these 2 lines.
-            var s = transform.localScale;
-            transform.localScale = new Vector3(Mathf.Abs(s.x) * -facingDirection, s.y, s.z);
+            Vector3 scale = transform.localScale;
+            transform.localScale = new Vector3(Mathf.Abs(scale.x) * -facingDirection, scale.y, scale.z);
             
             if (!isShooter) canShoot = false;
         }
 
         protected virtual void Awake()
         {
-            Rigidbody = GetComponent<Rigidbody2D>();
-            Animator = GetComponent<Animator>();
+            rigidbody = GetComponent<Rigidbody2D>();
+            animator = GetComponent<Animator>();
             _collider = GetComponent<Collider2D>();
             _colliderInChild = GetComponentInChildren<Collider2D>();
             
@@ -94,12 +92,12 @@ namespace Enemy
 
         private void FixedUpdate()
         {
-            _timer += Time.deltaTime;
+            timer += Time.deltaTime;
         }
         
-        protected virtual void HandleIdleState() => SetLinearVelocity(0, Rigidbody.linearVelocity.y);
+        protected virtual void HandleIdleState() => SetLinearVelocity(0, rigidbody.linearVelocity.y);
         
-        protected virtual void HandleMovingState() => SetLinearVelocity(moveSpeed * facingDirection, Rigidbody.linearVelocity.y);
+        protected virtual void HandleMovingState() => SetLinearVelocity(moveSpeed * facingDirection, rigidbody.linearVelocity.y);
 
         protected virtual void HandleAttackState() => print("Attack!");
 
@@ -111,20 +109,20 @@ namespace Enemy
         
         protected virtual void HandleEnemyDies()
         {
-            float destroyDelay = 1f;
+            const float destroyDelay = 1f;
             
             _collider.enabled = false;
             _colliderInChild.enabled = false;
             
-            Animator.SetTrigger(AnimHitParam);
-            SetLinearVelocity(Rigidbody.linearVelocity.x, deathImpact);
+            animator.SetTrigger(AnimHitParam);
+            SetLinearVelocity(rigidbody.linearVelocity.x, deathImpact);
             transform.Rotate(Vector3.forward * (deathRotationSpeed * Time.deltaTime));
             Destroy(gameObject, destroyDelay);
         }
 
         protected virtual void HandleAnimationEvents()
         {
-            Animator.SetFloat(AnimMoveParam, Rigidbody.linearVelocity.x);
+            animator.SetFloat(AnimMoveParam, rigidbody.linearVelocity.x);
         }
 
         protected virtual void HandleCollisionDetection()
@@ -198,19 +196,16 @@ namespace Enemy
             Gizmos.DrawWireSphere(transform.position + Vector3.right * -facingDirection * aggroRange, 0.2f);
         }
 
-        protected virtual void SetLinearVelocity(float x, float y) => Rigidbody.linearVelocity = new Vector2(x, y);
-        protected virtual void SetLinearVelocity(Vector2 velocity) => Rigidbody.linearVelocity = velocity;
+        protected virtual void SetLinearVelocity(float x, float y) => rigidbody.linearVelocity = new Vector2(x, y);
+        protected virtual void SetLinearVelocity(Vector2 velocity) => rigidbody.linearVelocity = velocity;
         
-        protected virtual void KnockBackVisualEffect()
-        {
-            Rigidbody.AddForce(customForce * -facingDirection, ForceMode2D.Impulse);
-        }
-
+        protected virtual void KnockBackVisualEffect() => rigidbody.AddForce(customForce * -facingDirection, ForceMode2D.Impulse);
+        
         protected void Shoot()
         {
             BulletEnemy bullet = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
             bullet.Direction = facingDirection;
-            _timer = 0f;
+            timer = 0f;
         }
     }
 }

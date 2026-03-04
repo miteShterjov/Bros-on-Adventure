@@ -1,4 +1,4 @@
-using System;
+using Managers;
 using UnityEngine;
 
 namespace Player
@@ -20,10 +20,8 @@ namespace Player
         
         [Header("Player Visuals")]
         [SerializeField] private AnimatorOverrideController[] animators;
-
         [SerializeField] private int userPrefSkinID;
-        
-        [Header("Sprite Direction"), Space]
+        [Space][Header("Sprite Direction")]
         [SerializeField] private int facingDirection = 1;
         
         private Animator _animator;
@@ -52,28 +50,28 @@ namespace Player
         
         public void RevivePlayerAnimEvent() => _animator.SetTrigger(RevivedAnimParam);
         public void DestroyPlayerAnimEvent() => _animator.SetTrigger(DeadAnimParam);
-        public void UserChoosePlayerSkin(int userPrefSkinID) => _animator.runtimeAnimatorController = animators[userPrefSkinID];
         
-
+        private void UserChoosePlayerSkin(int userPrefSkinIndex) => _animator.runtimeAnimatorController = animators[userPrefSkinIndex];
+        
         private void HandlePlayerAnimEvents()
         {
-            // player moves or is idle
+            // The player moves or is idle
             _animator.SetFloat(MoveAnimParam, _playerMovement.InputMovement.x);
             
-            // player jumps
+            // The player jumps
             _animator.SetFloat(JumpAnimParam, _playerMovement.GetLinearVelocity().y);
             
-            // player is jumping or not
+            // The player is jumping or not
             _animator.SetBool(JumpingAnimParam, !_playerCollision.IsGrounded);
 
-            // player does a second jump mid air
+            // The player does a second jump midair
             if (_playerMovement.ConsumeDoubleJump())
                 _animator.SetTrigger(DoubleJumpAnimParam);
             
-            // player is sliding on a wall
+            // The player is sliding on a wall
             _animator.SetBool(WallSlideAnimParam, _playerMovement.CurrentState == PlayerMovementController.State.WallSliding);
             
-            // player is hurt, takes damage
+            // The player is hurt, takes damage
             _animator.SetBool(PlayerHurtAnimParam, _playerMovement.PlayerIsKnocked);
         }
 

@@ -17,7 +17,7 @@ namespace Enemy.Traps
         private Animator _animator;
         private int _currentWaypointIndex;
         private bool _isWaiting;
-        private float _checkDistance = 0.2f;
+        private const float CheckDistance = 0.2f;
         private Vector3 _targetPosition;
 
         private void Awake()
@@ -46,7 +46,7 @@ namespace Enemy.Traps
                 _targetPosition,
                 moveSpeed * Time.deltaTime);
 
-            if (Vector2.Distance(transform.position, _targetPosition) < _checkDistance)
+            if (Vector2.Distance(transform.position, _targetPosition) < CheckDistance)
             {
                 if (isStopingAtWaypoints) StartCoroutine(StopAtWaypointCo());
                 _targetPosition = GetNextPosition();

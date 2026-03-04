@@ -1,4 +1,3 @@
-using System;
 using Enemy.Traps;
 using Player;
 using UnityEngine;
@@ -7,13 +6,14 @@ namespace GameMech
 {
     public class FireTrapLever : MonoBehaviour
     {
+        [Header("Lever")]
         [SerializeField] private Sprite leverOnSprite;
         [SerializeField] private Sprite leverOffSprite;
         [SerializeField, Tooltip("Put Fire Traps in this that you want to be affected by this lever.")] private FireTrap[] fireTraps;
         [SerializeField] private bool trapIsActive;
 
         private SpriteRenderer _spriteRenderer;
-        private bool _playerCanInteract = false;
+        private bool _playerCanInteract;
         private PlayerMovementController _playerMovement;
 
         private void Awake()
@@ -32,16 +32,14 @@ namespace GameMech
 
         private void Update()
         {
-            if (_playerCanInteract && _playerMovement.PlayerInteracts())
-            {
-                trapIsActive = !trapIsActive;
-                UpdateTraps();
-            }
+            if (!_playerCanInteract || !_playerMovement.PlayerInteracts()) return;
+            trapIsActive = !trapIsActive;
+            UpdateTraps();
         }
 
         private void UpdateTraps()
         {
-            foreach (var fireTrap in fireTraps) fireTrap.IsActive = trapIsActive;
+            foreach (FireTrap fireTrap in fireTraps) fireTrap.IsActive = trapIsActive;
             
             _spriteRenderer.sprite = trapIsActive ? leverOnSprite : leverOffSprite;
         }
