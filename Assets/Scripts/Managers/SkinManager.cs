@@ -6,7 +6,7 @@ namespace Managers
     {
         public static SkinManager Instance; 
         
-        [SerializeField] private int chosenSkinID;
+        public int chosenSkinID;
 
         private void Awake()
         {
@@ -19,4 +19,5 @@ namespace Managers
         public void SetSkinID(int skinID) => chosenSkinID = skinID;
         public int GetSkinID() => chosenSkinID;
     }
+    
 }

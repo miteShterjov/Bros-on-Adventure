@@ -43,6 +43,7 @@ namespace UI
         private static bool HasLevelProgress()
         {
             bool hasLevelProgression = PlayerPrefs.GetInt("ContinueLevelNumber", 0) > 0;
+            print("hasLevelProgression: " + hasLevelProgression);
             return hasLevelProgression;
         }
     }
