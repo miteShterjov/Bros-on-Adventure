@@ -72,11 +72,23 @@ namespace Managers
         public void SpawnObject(GameObject prefab, Transform spawnPoint, float delay = 0) => 
             StartCoroutine(SpawnObjectCoroutine(prefab, spawnPoint, delay));
 
+        public static void RestartCurrentLevel() =>
+            UIInGame.Instance.fadeEffect.ScreenFade(0.75f, 1.5f, LoadCurrentScene);
+
         public void AddFruit()
         {
             fruitCollected++;
             UIInGame.Instance.UpdateFruitsUI();
         }
+        
+        public void RemoveFruits(int amount)
+        {
+            fruitCollected -= amount;
+            fruitCollected = Mathf.Clamp(fruitCollected, 0, totalFruits);
+            UIInGame.Instance.UpdateFruitsUI();
+        }
+        
+        public int FruitsCollected() => fruitCollected;
 
         public string FruitsInfo() => fruitCollected + " / " + totalFruits;
     
@@ -188,5 +200,7 @@ namespace Managers
             PlayerPrefs.SetInt(totalFruitsKey, totalFruits);
             PlayerPrefs.Save();
         }
+        
+        private static void LoadCurrentScene() => SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

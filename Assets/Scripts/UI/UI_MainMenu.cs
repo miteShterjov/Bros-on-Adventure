@@ -12,7 +12,8 @@ namespace UI
         [SerializeField] private GameObject continueButton;
     
         private UIFadeInOutVFX _fadeEffect;
-
+        private int _levelToContinue;
+        
         private void Awake()
         {
             _fadeEffect = GetComponentInChildren<UIFadeInOutVFX>();
@@ -28,8 +29,8 @@ namespace UI
         
         public void ContinueGame()
         {
-            int levelToContinue = PlayerPrefs.GetInt("ContinueLevelNumber", 0);
-            SceneManager.LoadScene("Level_" + levelToContinue);
+            _levelToContinue = PlayerPrefs.GetInt("ContinueLevelNumber", 0);
+            SceneManager.LoadScene(_levelToContinue);
         }
     
         private void LoadNextScene() => SceneManager.LoadScene(firstLevelName);
